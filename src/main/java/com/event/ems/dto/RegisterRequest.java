@@ -1,22 +1,11 @@
 package com.event.ems.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-
 public class RegisterRequest {
 
-    @NotBlank
     private String fullName;
-
-    @Email
-    @NotBlank
     private String email;
-
-    @NotBlank
     private String password;
-
-    public RegisterRequest() {
-    }
+    private String role; // USER or ORGANIZER
 
     public String getFullName() {
         return fullName;
@@ -40,5 +29,13 @@ public class RegisterRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
