@@ -30,19 +30,28 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Email already registered");
         }
 
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
+        RoleName roleName;
+
+        if ("ORGANIZER".equalsIgnoreCase(request.getRole())) {
+            roleName = RoleName.ROLE_ORGANIZER;
+        } else {
+            roleName = RoleName.ROLE_USER;
+        }
+
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
-                .password(request.getPassword()) // plain password
-                .roles(Set.of(userRole))
+                .password(request.getPassword()) // plain (for now)
+                .roles(Set.of(role))
                 .enabled(true)
                 .build();
 
         return userRepository.save(user);
     }
+
 
     // ✅ LOGIN
     @Override
@@ -55,9 +64,15 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid email or password");
         }
 
-        String role = user.getRoles().iterator().next().getName().name();
+        String role = user.getRoles()
+                .iterator()
+                .next()
+                .getName()
+                .name();
+
         String token = jwtUtil.generateToken(user.getEmail(), role);
 
         return new AuthResponse(token, role);
     }
+
 }
