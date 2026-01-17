@@ -10,8 +10,7 @@ public class LoginRequest {
     @NotBlank
     private String password;
 
-    public LoginRequest() {
-    }
+    public LoginRequest() {}
 
     public String getEmail() {
         return email;
@@ -29,3 +28,7 @@ public class LoginRequest {
         this.password = password;
     }
 }
+
+/*VIVA- for JWT- login token
+We implemented JWT-based authentication where user credentials are verified, a token is generated on login, and role-based authorization is handled using Spring Security filters.
+* */
