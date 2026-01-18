@@ -11,9 +11,9 @@ public interface EventService {
 
     List<Event> getAllEvents();
 
+    List<Event> getApprovedEvents();
+
     Event updateEvent(Long id, EventRequest request, String email);
 
     void deleteEvent(Long id);
-
-    List<Event> getApprovedEvents();
 }
