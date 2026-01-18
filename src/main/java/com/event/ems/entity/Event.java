@@ -26,6 +26,9 @@ public class Event {
 
     private LocalDate eventDate;
 
+    @Enumerated(EnumType.STRING)
+    private EventStatus status = EventStatus.PENDING;
+
     // Who created this event
     private String createdBy; // email from JWT
 }
