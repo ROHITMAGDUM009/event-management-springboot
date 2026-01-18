@@ -1,2 +1,7 @@
-package com.event.ems.entity;public enum EventStatus {
+package com.event.ems.entity;
+
+public enum EventStatus {
+    PENDING,
+    APPROVED,
+    REJECTED
 }
