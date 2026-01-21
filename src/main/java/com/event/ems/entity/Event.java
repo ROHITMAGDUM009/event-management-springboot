@@ -29,6 +29,12 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.PENDING;
 
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
+
+    // For PAID events
+    private Double price;
+
     // Who created this event
     private String createdBy; // email from JWT
 }
