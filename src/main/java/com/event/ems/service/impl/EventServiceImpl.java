@@ -3,6 +3,7 @@ package com.event.ems.service.impl;
 import com.event.ems.dto.EventRequest;
 import com.event.ems.entity.Event;
 import com.event.ems.entity.EventStatus;
+import com.event.ems.entity.EventType;
 import com.event.ems.repository.EventRepository;
 import com.event.ems.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,27 @@ public class EventServiceImpl implements EventService {
     public Event createEvent(EventRequest request, String email) {
 
         Event event = new Event();
+
+        // 🔹 BASIC DETAILS
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setLocation(request.getLocation());
         event.setEventDate(request.getEventDate());
         event.setCreatedBy(email);
+
+        // 🔹 EVENT STATUS (Admin approval pending)
         event.setStatus(EventStatus.PENDING);
+
+        // 🔹 EVENT TYPE (FREE / PAID / PACKAGE)
+        EventType eventType = EventType.valueOf(request.getEventType());
+        event.setEventType(eventType);
+
+        // 🔹 PRICE LOGIC
+        if (eventType == EventType.PAID) {
+            event.setPrice(request.getPrice());
+        } else {
+            event.setPrice(0.0);
+        }
 
         return eventRepository.save(event);
     }
