@@ -9,6 +9,9 @@ public class EventRequest {
     private String location;
     private LocalDate eventDate;
 
+    private String eventType; // FREE, PAID, PACKAGE
+    private Double price;     // only for PAID
+
     public EventRequest() {
     }
 
@@ -42,5 +45,21 @@ public class EventRequest {
 
     public void setEventDate(LocalDate eventDate) {
         this.eventDate = eventDate;
+    }
+
+    public String getEventType() {
+        return this.eventType;
+    }
+
+    public void setEventType(final String eventType) {
+        this.eventType = eventType;
+    }
+
+    public Double getPrice() {
+        return this.price;
+    }
+
+    public void setPrice(final Double price) {
+        this.price = price;
     }
 }
