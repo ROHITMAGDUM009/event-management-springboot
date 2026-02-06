@@ -1,7 +1,6 @@
 package com.event.ems.dto;
 
 public class BookingRequest {
-
     private Long eventId;
 
     public Long getEventId() {
