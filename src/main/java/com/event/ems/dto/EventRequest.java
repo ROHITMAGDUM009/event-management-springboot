@@ -9,41 +9,40 @@ public class EventRequest {
     private String location;
     private LocalDate eventDate;
 
-    private String eventType; // FREE, PAID, PACKAGE
-    private Double price;     // only for PAID
+    private String eventType;       // FREE / PAID
+    private Double price;
 
-    public EventRequest() {
-    }
+    private String approvalType;    // AUTO / MANUAL
 
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
     public String getLocation() {
-        return location;
+        return this.location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(final String location) {
         this.location = location;
     }
 
     public LocalDate getEventDate() {
-        return eventDate;
+        return this.eventDate;
     }
 
-    public void setEventDate(LocalDate eventDate) {
+    public void setEventDate(final LocalDate eventDate) {
         this.eventDate = eventDate;
     }
 
@@ -61,5 +60,13 @@ public class EventRequest {
 
     public void setPrice(final Double price) {
         this.price = price;
+    }
+
+    public String getApprovalType() {
+        return this.approvalType;
+    }
+
+    public void setApprovalType(final String approvalType) {
+        this.approvalType = approvalType;
     }
 }
