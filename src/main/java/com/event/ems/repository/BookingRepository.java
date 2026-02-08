@@ -9,5 +9,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByUserEmail(String email);
 
-    List<Booking> findByEventId(Long eventId);
+    List<Booking> findByEvent_CreatedBy(String organizerEmail);
 }
