@@ -19,22 +19,20 @@ public class Event {
     private Long id;
 
     private String title;
-
     private String description;
-
     private String location;
-
     private LocalDate eventDate;
 
-    @Enumerated(EnumType.STRING)
-    private EventStatus status = EventStatus.PENDING;
-
-    @Enumerated(EnumType.STRING)
-    private EventType eventType;
-
-    // For PAID events
     private Double price;
 
-    // Who created this event
-    private String createdBy; // email from JWT
+    @Enumerated(EnumType.STRING)
+    private EventType eventType; // FREE, PAID, PACKAGE
+
+    @Enumerated(EnumType.STRING)
+    private BookingApprovalType approvalType; // AUTO / MANUAL
+
+    @Enumerated(EnumType.STRING)
+    private EventStatus status; // PENDING / APPROVED / REJECTED
+
+    private String createdBy; // organizer email
 }
