@@ -54,4 +54,19 @@ public class EventController {
         eventService.deleteEvent(id);
         return ResponseEntity.ok("Event deleted");
     }
+
+    // Add these two methods to your existing EventController:
+
+    // ✅ PUBLIC — approved events only
+    @GetMapping("/approved")
+    public List<Event> getApprovedEvents() {
+        return eventService.getApprovedEvents();
+    }
+
+    // ✅ ORGANIZER — my events
+    @GetMapping("/my")
+    @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
+    public List<Event> getMyEvents(Authentication authentication) {
+        return eventService.getMyEvents(authentication.getName());
+    }
 }
