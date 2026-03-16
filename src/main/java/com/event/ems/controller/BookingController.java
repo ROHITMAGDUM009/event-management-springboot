@@ -16,11 +16,18 @@ public class BookingController {
 
     private final BookingService bookingService;
 
+    // ✅ CREATE BOOKING
     @PostMapping
     public Booking bookEvent(
             @RequestBody BookingRequest request,
             Authentication authentication
     ) {
         return bookingService.createBooking(request, authentication.getName());
+    }
+
+    // ✅ NEW — GET MY BOOKINGS
+    @GetMapping("/my")
+    public List<Booking> getMyBookings(Authentication authentication) {
+        return bookingService.getMyBookings(authentication.getName());
     }
 }
