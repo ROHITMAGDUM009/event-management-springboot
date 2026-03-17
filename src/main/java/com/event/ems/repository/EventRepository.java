@@ -11,4 +11,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStatus(EventStatus status);
 
     List<Event> findByCreatedBy(String email);
+
+    // ✅ NEW
+    long countByStatus(EventStatus status);
 }
