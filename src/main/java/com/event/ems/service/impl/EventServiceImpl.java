@@ -18,6 +18,11 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
 
     @Override
+    public List<Event> getMyEvents(String email) {
+        return eventRepository.findByCreatedBy(email);
+    }
+
+    @Override
     public Event createEvent(EventRequest request, String email) {
 
         Event event = new Event();
