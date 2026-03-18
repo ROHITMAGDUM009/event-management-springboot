@@ -8,12 +8,21 @@ import com.event.ems.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
+
+    // Add this method to your existing BookingServiceImpl:
+
+    @Override
+    public List<Booking> getMyBookings(String userEmail) {
+        return bookingRepository.findByUserEmail(userEmail);
+    }
 
     @Override
     public Booking createBooking(BookingRequest request, String userEmail) {
@@ -43,4 +52,6 @@ public class BookingServiceImpl implements BookingService {
 
         return bookingRepository.save(booking);
     }
+
+
 }
