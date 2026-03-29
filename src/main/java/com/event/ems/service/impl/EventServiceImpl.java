@@ -1,6 +1,7 @@
 package com.event.ems.service.impl;
 
 import com.event.ems.dto.EventRequest;
+import com.event.ems.entity.BookingApprovalType;
 import com.event.ems.entity.Event;
 import com.event.ems.entity.EventStatus;
 import com.event.ems.entity.EventType;
@@ -38,11 +39,17 @@ public class EventServiceImpl implements EventService {
         event.setStatus(EventStatus.PENDING);
 
         // 🔹 EVENT TYPE (FREE / PAID / PACKAGE)
-        EventType eventType = EventType.valueOf(request.getEventType());
+        EventType eventType = parseEventType(request.getEventType());
         event.setEventType(eventType);
+
+        BookingApprovalType approvalType = parseApprovalType(request.getApprovalType());
+        event.setApprovalType(approvalType);
 
         // 🔹 PRICE LOGIC
         if (eventType == EventType.PAID) {
+            if (request.getPrice() == null || request.getPrice() <= 0) {
+                throw new RuntimeException("Paid events must have a price greater than zero");
+            }
             event.setPrice(request.getPrice());
         } else {
             event.setPrice(0.0);
@@ -75,6 +82,18 @@ public class EventServiceImpl implements EventService {
         event.setDescription(request.getDescription());
         event.setLocation(request.getLocation());
         event.setEventDate(request.getEventDate());
+        EventType eventType = parseEventType(request.getEventType());
+        event.setEventType(eventType);
+        event.setApprovalType(parseApprovalType(request.getApprovalType()));
+
+        if (eventType == EventType.PAID) {
+            if (request.getPrice() == null || request.getPrice() <= 0) {
+                throw new RuntimeException("Paid events must have a price greater than zero");
+            }
+            event.setPrice(request.getPrice());
+        } else {
+            event.setPrice(0.0);
+        }
 
         return eventRepository.save(event);
     }
@@ -82,5 +101,29 @@ public class EventServiceImpl implements EventService {
     @Override
     public void deleteEvent(Long id) {
         eventRepository.deleteById(id);
+    }
+
+    private EventType parseEventType(String rawEventType) {
+        if (rawEventType == null || rawEventType.isBlank()) {
+            throw new RuntimeException("Event type is required");
+        }
+
+        try {
+            return EventType.valueOf(rawEventType.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Invalid event type: " + rawEventType);
+        }
+    }
+
+    private BookingApprovalType parseApprovalType(String rawApprovalType) {
+        if (rawApprovalType == null || rawApprovalType.isBlank()) {
+            return BookingApprovalType.AUTO;
+        }
+
+        try {
+            return BookingApprovalType.valueOf(rawApprovalType.trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new RuntimeException("Invalid approval type: " + rawApprovalType);
+        }
     }
 }
