@@ -17,12 +17,11 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) {
 
         for (RoleName roleName : RoleName.values()) {
-            roleRepository.findByName(roleName)
-                    .orElseGet(() -> {
-                        Role role = new Role();
-                        role.setName(roleName);
-                        return roleRepository.save(role);
-                    });
+            roleRepository.findByName(roleName).orElseGet(() -> {
+                Role role = new Role();
+                role.setName(roleName);
+                return roleRepository.save(role);
+            });
         }
     }
 
