@@ -7,6 +7,7 @@ import com.event.ems.repository.RoleRepository;
 import com.event.ems.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
 
@@ -15,32 +16,33 @@ public class AdminInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public AdminInitializer(UserRepository userRepository,
-                            RoleRepository roleRepository) {
+                            RoleRepository roleRepository,
+                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
 
-        // 🔐 Check if admin already exists
         if (userRepository.existsByEmail("admin@ems.com")) {
             return;
         }
 
-        // 🔑 Fetch ADMIN role
         Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("ROLE_ADMIN not found"));
 
-        // 👑 Create admin user
-        User admin = new User();
-        admin.setFullName("System Admin");
-        admin.setEmail("admin@ems.com");
-        admin.setPassword("admin123"); // plain password (as per your project)
-        admin.setRoles(Set.of(adminRole));
-        admin.setEnabled(true);
+        User admin = User.builder()
+                .fullName("System Admin")
+                .email("admin@ems.com")
+                .password(passwordEncoder.encode("admin123"))
+                .roles(Set.of(adminRole))
+                .enabled(true)
+                .build();
 
         userRepository.save(admin);
 
