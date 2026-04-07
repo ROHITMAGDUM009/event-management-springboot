@@ -80,4 +80,14 @@ public class EventRequest {
     public void setApprovalType(final String approvalType) {
         this.approvalType = approvalType;
     }
+
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+
+    public void setImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    private String imageUrl;
 }

@@ -35,4 +35,6 @@ public class Event {
     private EventStatus status; // PENDING / APPROVED / REJECTED
 
     private String createdBy; // organizer email
+
+    private String imageUrl;
 }

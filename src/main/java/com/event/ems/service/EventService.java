@@ -18,4 +18,6 @@ public interface EventService {
     void deleteEvent(Long id);
 
     List<Event> getMyEvents(String email);
+
+    Event getEventById(Long id);
 }

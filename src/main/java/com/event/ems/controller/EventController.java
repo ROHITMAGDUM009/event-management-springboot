@@ -69,4 +69,10 @@ public class EventController {
     public List<Event> getMyEvents(Authentication authentication) {
         return eventService.getMyEvents(authentication.getName());
     }
+
+    // ✅ GET SINGLE EVENT BY ID (approved only — used on EventDetails page)
+    @GetMapping("/{id}")
+    public Event getEventById(@PathVariable Long id) {
+        return eventService.getEventById(id);
+    }
 }

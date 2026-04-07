@@ -9,9 +9,12 @@ import com.event.ems.entity.RoleName;
 import com.event.ems.entity.User;
 import com.event.ems.repository.RoleRepository;
 import com.event.ems.repository.UserRepository;
+import com.event.ems.exception.ResourceNotFoundException;
+import com.event.ems.exception.UserAlreadyExistsException;
 import com.event.ems.security.JwtUtil;
 import com.event.ems.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -22,13 +25,14 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final JwtUtil jwtUtil; // ✅ FIXED
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User registerUser(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new UserAlreadyExistsException(request.getEmail());
         }
 
         RoleName roleName;
@@ -40,12 +44,12 @@ public class UserServiceImpl implements UserService {
         }
 
         Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
-                .password(request.getPassword()) // plain (for now)
+                .password(passwordEncoder.encode(request.getPassword()))
                 .roles(Set.of(role))
                 .enabled(true)
                 .build();
@@ -54,14 +58,14 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    // ✅ LOGIN
+    // LOGIN
     @Override
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
 

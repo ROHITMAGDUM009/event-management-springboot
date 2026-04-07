@@ -35,4 +35,17 @@ public class OrganizerBookingController {
         booking.setBookingStatus(BookingStatus.APPROVED);
         return bookingRepository.save(booking);
     }
+
+    @PostMapping("/{id}/reject")
+    public Booking rejectBooking(@PathVariable Long id, Authentication authentication) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        if (!booking.getEvent().getCreatedBy().equals(authentication.getName())) {
+            throw new RuntimeException("Not allowed");
+        }
+
+        booking.setBookingStatus(BookingStatus.REJECTED);
+        return bookingRepository.save(booking);
+    }
 }

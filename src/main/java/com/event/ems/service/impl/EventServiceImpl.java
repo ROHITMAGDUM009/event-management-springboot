@@ -45,6 +45,9 @@ public class EventServiceImpl implements EventService {
         BookingApprovalType approvalType = parseApprovalType(request.getApprovalType());
         event.setApprovalType(approvalType);
 
+        // 🔹 IMAGE (optional)
+        event.setImageUrl(request.getImageUrl());
+
         // 🔹 PRICE LOGIC
         if (eventType == EventType.PAID) {
             if (request.getPrice() == null || request.getPrice() <= 0) {
@@ -69,6 +72,16 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Event getEventById(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+        if (event.getStatus() != EventStatus.APPROVED) {
+            throw new RuntimeException("Event not available");
+        }
+        return event;
+    }
+
+    @Override
     public Event updateEvent(Long id, EventRequest request, String email) {
 
         Event event = eventRepository.findById(id)
@@ -85,6 +98,7 @@ public class EventServiceImpl implements EventService {
         EventType eventType = parseEventType(request.getEventType());
         event.setEventType(eventType);
         event.setApprovalType(parseApprovalType(request.getApprovalType()));
+        event.setImageUrl(request.getImageUrl());
 
         if (eventType == EventType.PAID) {
             if (request.getPrice() == null || request.getPrice() <= 0) {
