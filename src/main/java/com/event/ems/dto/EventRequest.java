@@ -1,18 +1,29 @@
 package com.event.ems.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class EventRequest {
 
+    @NotBlank(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Description is required")
     private String description;
+
+    @NotBlank(message = "Location is required")
     private String location;
+
+    @NotNull(message = "Event date is required")
     private LocalDate eventDate;
 
-    private String eventType;       // FREE / PAID
+    @NotBlank(message = "Event type is required")
+    private String eventType;
+
     private Double price;
 
-    private String approvalType;    // AUTO / MANUAL
+    private String approvalType;
 
     public String getTitle() {
         return this.title;
