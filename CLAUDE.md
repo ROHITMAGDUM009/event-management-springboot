@@ -38,6 +38,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   ```bash
   ./mvnw compile
   ```
+- **Dependency tree** (to troubleshoot conflicts):
+  ```bash
+  ./mvnw dependency:tree
+  ```
+- **Clean install** (fresh build):
+  ```bash
+  ./mvnw clean install
+  ```
 
 These commands are the core workflow for development, debugging, and CI pipelines.
 
@@ -74,6 +82,7 @@ src/main/java/com/event/ems/
 ├── controller/         # REST endpoints (Auth, Event, Booking, Payment, Admin, User, OrganizerBooking, Test, AdminUser)
 ├── dto/                # Request/Response DTOs (Register, Login, Event, Booking, Dashboard, User, Revenue, Organizer)
 ├── entity/             # JPA entities (User, Role, Event, Booking, EventPackage) + enums
+├── exception/          # Custom exceptions and global handler
 ├── repository/         # Spring Data JPA repositories
 ├── security/           # JWT auth (JwtUtil, JwtAuthenticationFilter, SecurityConfig)
 ├── service/            # Service interfaces
@@ -99,6 +108,7 @@ src/main/java/com/event/ems/
   - `/api/user/**` — ROLE_USER
 - Method-level guards via `@PreAuthorize` on controller endpoints (e.g., AdminController, OrganizerBookingController).
 - Auto-provisioning: `AdminInitializer` seeds admin user if none exists; `DataInitializer` seeds roles.
+- Global exception handling via `GlobalExceptionHandler` for consistent error responses.
 
 ### API Endpoints Summary
 
@@ -138,7 +148,9 @@ src/main/java/com/event/ems/
 ### Notes
 
 - `CrossOrigin("http://localhost:5173")` on `AuthController` only — frontend assumed to be Vite/React on port 5173.
+- Frontend project located at: `D:\Dev_Downloads\Workspaces\workspace_Projects_IDEA\vs-code_workspace\EMS\ems-ui`
 - `PaymentController.pay` is a simulated payment (just flips PaymentStatus). No real payment gateway.
 - `JwtUtil` uses a hardcoded base64 secret key — suitable for dev only.
-- No global exception handler exists; controller errors throw `RuntimeException` (will produce default 500 responses).
-- Tests are minimal — only `contextLoads` smoke test.
+- Global exception handler (`GlobalExceptionHandler`) provides consistent error responses.
+- Tests are minimal — only `contextLoads` smoke test in `EmsApplicationTests.java`.
+- Email service is defined but not used - registration and login are kept simple without email verification.

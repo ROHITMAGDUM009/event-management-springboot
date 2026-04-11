@@ -11,14 +11,12 @@ import com.event.ems.repository.RoleRepository;
 import com.event.ems.repository.UserRepository;
 import com.event.ems.exception.ResourceNotFoundException;
 import com.event.ems.exception.UserAlreadyExistsException;
-import com.event.ems.service.EmailService;
 import com.event.ems.security.JwtUtil;
 import com.event.ems.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
