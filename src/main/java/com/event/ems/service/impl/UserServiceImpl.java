@@ -11,13 +11,14 @@ import com.event.ems.repository.RoleRepository;
 import com.event.ems.repository.UserRepository;
 import com.event.ems.exception.ResourceNotFoundException;
 import com.event.ems.exception.UserAlreadyExistsException;
+import com.event.ems.service.EmailService;
 import com.event.ems.security.JwtUtil;
 import com.event.ems.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User registerUser(RegisterRequest request) {
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword()) // plain text
                 .roles(Set.of(role))
                 .enabled(true)
                 .build();
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
 
