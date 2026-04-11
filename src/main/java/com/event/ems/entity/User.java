@@ -36,6 +36,17 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Email verification fields
+    @Builder.Default
+    @Column(name = "is_email_verified", nullable = false)
+    private boolean isEmailVerified = false;
+
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    @Column(name = "email_verification_token_expiry_date")
+    private LocalDateTime emailVerificationTokenExpiryDate;
+
     // 🔐 USER ↔ ROLE RELATIONSHIP
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
