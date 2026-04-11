@@ -8,6 +8,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Quick Start Commands
 
+### Common Development Commands
+
+- **Run the application** (requires MySQL):
+  ```bash
+  ./mvnw spring-boot:run
+  ```
+- **Build the JAR** (skip tests):
+  ```bash
+  ./mvnw clean package -DskipTests
+  ```
+- **Build & run tests**:
+  ```bash
+  ./mvnw clean package
+  ```
+- **Run all tests**:
+  ```bash
+  ./mvnw test
+  ```
+- **Run a single test class** (replace `MyTestClass`):
+  ```bash
+  ./mvnw test -Dtest=MyTestClass
+  ```
+- **Run a single test method** (replace `MyTestClass#myMethod`):
+  ```bash
+  ./mvnw -Dtest=MyTestClass#myMethod test
+  ```
+- **Recompile without restarting** (useful with devtools):
+  ```bash
+  ./mvnw compile
+  ```
+
+These commands are the core workflow for development, debugging, and CI pipelines.
+
 ```bash
 # Run with MySQL
 ./mvnw spring-boot:run
@@ -68,6 +101,20 @@ src/main/java/com/event/ems/
 - Auto-provisioning: `AdminInitializer` seeds admin user if none exists; `DataInitializer` seeds roles.
 
 ### API Endpoints Summary
+
+**Extending the API** (adding a new feature endpoint)
+- **DTO**: Create request/response classes in `dto/`.
+- **Entity** (if new persistence): Add JPA `@Entity` in `entity/` and the corresponding `JpaRepository`.
+- **Service**: Define an interface in `service/` and its implementation in `service/impl/`.
+- **Controller**: Add a REST controller in `controller/` with appropriate `@RequestMapping`.
+- Secure the endpoint using `@PreAuthorize` based on role (e.g., `hasRole('ROLE_ADMIN')`).
+- Include validation annotations (`@Valid`) on DTOs and handle errors via `RuntimeException` or custom exceptions.
+- Write unit tests for service and integration tests for controller using `@SpringBootTest`.
+- Update Swagger/OpenAPI if generated.
+
+---
+
+## API Endpoints Summary
 
 | Controller | Path Prefix | Auth | Purpose |
 |---|---|---|---|
