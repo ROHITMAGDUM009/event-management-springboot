@@ -4,15 +4,14 @@ import com.event.ems.dto.DashboardStatsDTO;
 import com.event.ems.entity.Event;
 import com.event.ems.service.AdminService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasAuthority('ROLE_ADMIN')")
 @RequiredArgsConstructor
+// ✅ REMOVED @PreAuthorize — SecurityConfig handles it
 public class AdminController {
 
     private final AdminService adminService;
