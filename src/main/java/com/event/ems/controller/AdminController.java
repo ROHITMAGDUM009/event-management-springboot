@@ -15,7 +15,6 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
-
     // ✅ DASHBOARD STATS
     @GetMapping("/dashboard-stats")
     public DashboardStatsDTO getDashboardStats() {
