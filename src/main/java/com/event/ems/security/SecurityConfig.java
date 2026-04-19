@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -22,57 +21,42 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    // ✅ Plain text password encoder (dev only)
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // ✅ Keep your existing encoder (plain text for dev)
         return new PasswordEncoder() {
             @Override
-            public String encode(CharSequence rawPassword) {
-                return rawPassword.toString();
+            public String encode(CharSequence raw) {
+                return raw.toString();
             }
-
             @Override
-            public boolean matches(CharSequence rawPassword,
-                                   String encodedPassword) {
-                return rawPassword.toString().equals(encodedPassword);
+            public boolean matches(CharSequence raw, String encoded) {
+                return raw.toString().equals(encoded);
             }
         };
     }
 
-    // ✅ CORS CONFIGURATION BEAN
+    // ✅ CORS config
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
-        // ✅ Allow your React frontend
         config.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000"
         ));
-
-        // ✅ Allow all HTTP methods
         config.setAllowedMethods(List.of(
                 "GET", "POST", "PUT",
                 "DELETE", "OPTIONS", "PATCH"
         ));
-
-        // ✅ Allow all headers including Authorization
         config.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "Accept",
-                "Origin",
-                "X-Requested-With"
+                "Authorization", "Content-Type",
+                "Accept", "Origin", "X-Requested-With"
         ));
-
-        // ✅ Allow credentials (JWT)
         config.setAllowCredentials(true);
 
-        // ✅ Apply to all routes
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
-
         return source;
     }
 
@@ -82,39 +66,39 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-
-                // ✅ FIXED — Enable CORS with our config
-                .cors(cors -> cors
-                        .configurationSource(corsConfigurationSource())
-                )
-
-                .sessionManagement(sm ->
-                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
+                .cors(cors -> cors.configurationSource(
+                        corsConfigurationSource()))
+                .sessionManagement(sm -> sm
+                        .sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // ✅ Allow CORS preflight
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // ✅ CORS preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**")
+                        .permitAll()
 
-                        // ✅ Allow public auth endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // ✅ Public auth
+                        .requestMatchers("/api/auth/**")
+                        .permitAll()
 
-                        // ✅ Allow public event browsing
+                        // ✅ Public event browsing
                         .requestMatchers(HttpMethod.GET,
-                                "/api/events/approved").permitAll()
+                                "/api/events/approved")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/api/events/{id}").permitAll()
+                                "/api/events/{id}")
+                        .permitAll()
 
-                        // ✅ Role based access
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
-                        .requestMatchers("/api/user/**").hasRole("USER")
+                        // ✅ FIXED — use hasAuthority (consistent)
+                        .requestMatchers("/api/admin/**")
+                        .hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/api/organizer/**")
+                        .hasAuthority("ROLE_ORGANIZER")
+                        .requestMatchers("/api/user/**")
+                        .hasAuthority("ROLE_USER")
 
-                        // ✅ Everything else needs auth
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

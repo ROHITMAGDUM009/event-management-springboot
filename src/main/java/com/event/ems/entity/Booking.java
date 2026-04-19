@@ -3,6 +3,8 @@ package com.event.ems.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "bookings")
 @Getter
@@ -29,4 +31,13 @@ public class Booking {
     private PaymentStatus paymentStatus;
 
     private Double amount;
+
+    // ✅ TICKET QUANTITY (PHASE 4)
+    private Integer ticketQuantity = 1;
+
+    // ✅ CANCELLATION (PHASE 2)
+    private LocalDateTime cancelledAt;
+    private String cancellationReason;
+    private Double refundAmount;
+    private PaymentStatus refundStatus;
 }

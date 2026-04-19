@@ -6,7 +6,9 @@ import com.event.ems.repository.*;
 import com.event.ems.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,36 +22,20 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public DashboardStatsDTO getDashboardStats() {
-
-        // Count total users (non-admin, non-organizer)
         long totalUsers = userRepository.countByRoles_Name(RoleName.ROLE_USER);
-
-        // Count organizers
         long totalOrganizers = userRepository.countByRoles_Name(RoleName.ROLE_ORGANIZER);
-
-        // Count all events
         long totalEvents = eventRepository.count();
-
-        // Count pending events waiting for approval
         long pendingEvents = eventRepository.countByStatus(EventStatus.PENDING);
-
-        // Count all bookings
         long totalBookings = bookingRepository.count();
 
-        // Sum all successful payment amounts
-        double totalRevenue = bookingRepository.findAll()
-                .stream()
+        double totalRevenue = bookingRepository.findAll().stream()
                 .filter(b -> b.getPaymentStatus() == PaymentStatus.SUCCESS)
                 .mapToDouble(b -> b.getAmount() != null ? b.getAmount() : 0.0)
                 .sum();
 
         return new DashboardStatsDTO(
-                totalUsers,
-                totalOrganizers,
-                totalEvents,
-                pendingEvents,
-                totalBookings,
-                totalRevenue
+                totalUsers, totalOrganizers, totalEvents,
+                pendingEvents, totalBookings, totalRevenue
         );
     }
 
@@ -72,5 +58,35 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
+    }
+
+    // ✅ NEW — SOFT DELETE WITH VALIDATION
+    @Override
+    @Transactional
+    public void deleteEvent(Long eventId, String reason, String adminEmail) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        // ✅ CHECK IF HAS BOOKINGS
+        long bookingCount = bookingRepository.countByEventIdAndNotCancelled(eventId);
+
+        if (bookingCount > 0) {
+            throw new RuntimeException(
+                    String.format(
+                            "Cannot delete event with %d active bookings. " +
+                                    "Please cancel all bookings first or contact support.",
+                            bookingCount
+                    )
+            );
+        }
+
+        // ✅ SOFT DELETE
+        event.setDeleted(true);
+        event.setDeletedAt(LocalDateTime.now());
+        event.setDeletedBy(adminEmail);
+        event.setDeletionReason(reason);
+        event.setStatus(EventStatus.REJECTED);
+
+        eventRepository.save(event);
     }
 }

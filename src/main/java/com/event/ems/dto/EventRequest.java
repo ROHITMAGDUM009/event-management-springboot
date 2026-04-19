@@ -2,6 +2,7 @@ package com.event.ems.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 
 public class EventRequest {
@@ -22,72 +23,32 @@ public class EventRequest {
     private String eventType;
 
     private Double price;
-
     private String approvalType;
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public String getLocation() {
-        return this.location;
-    }
-
-    public void setLocation(final String location) {
-        this.location = location;
-    }
-
-    public LocalDate getEventDate() {
-        return this.eventDate;
-    }
-
-    public void setEventDate(final LocalDate eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public String getEventType() {
-        return this.eventType;
-    }
-
-    public void setEventType(final String eventType) {
-        this.eventType = eventType;
-    }
-
-    public Double getPrice() {
-        return this.price;
-    }
-
-    public void setPrice(final Double price) {
-        this.price = price;
-    }
-
-    public String getApprovalType() {
-        return this.approvalType;
-    }
-
-    public void setApprovalType(final String approvalType) {
-        this.approvalType = approvalType;
-    }
-
-    public String getImageUrl() {
-        return this.imageUrl;
-    }
-
-    public void setImageUrl(final String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     private String imageUrl;
+
+    // ✅ SEAT MANAGEMENT
+    private Boolean hasSeatLimit = false;
+    private Integer totalSeats;
+
+    // Getters & Setters
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    public LocalDate getEventDate() { return eventDate; }
+    public void setEventDate(LocalDate eventDate) { this.eventDate = eventDate; }
+    public String getEventType() { return eventType; }
+    public void setEventType(String eventType) { this.eventType = eventType; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+    public String getApprovalType() { return approvalType; }
+    public void setApprovalType(String approvalType) { this.approvalType = approvalType; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public Boolean getHasSeatLimit() { return hasSeatLimit; }
+    public void setHasSeatLimit(Boolean hasSeatLimit) { this.hasSeatLimit = hasSeatLimit; }
+    public Integer getTotalSeats() { return totalSeats; }
+    public void setTotalSeats(Integer totalSeats) { this.totalSeats = totalSeats; }
 }

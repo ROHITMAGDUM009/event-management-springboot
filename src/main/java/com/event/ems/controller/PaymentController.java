@@ -16,14 +16,11 @@ public class PaymentController {
 
     private final BookingRepository bookingRepository;
 
-    // Only allow paying for own bookings
     @PostMapping("/pay/{bookingId}")
     public Booking pay(@PathVariable Long bookingId, Authentication authentication) {
-
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        // Verify this booking belongs to the user
         if (!booking.getUserEmail().equals(authentication.getName())) {
             throw new RuntimeException("Not allowed");
         }
