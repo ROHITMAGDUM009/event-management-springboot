@@ -4,11 +4,17 @@ import com.event.ems.dto.EventRequest;
 import com.event.ems.entity.Event;
 import com.event.ems.service.EventService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;  // ✅ REQUIRED FOR multipart/form-data
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -25,18 +31,36 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
-    // ORGANIZER ONLY
-    @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
+    // ✅ NEW — CREATE EVENT WITH IMAGE UPLOAD
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Event createEvent(
-            @RequestBody EventRequest request,
+            @RequestPart("event") String eventData,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             Authentication authentication
-    ) {
+    ) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        EventRequest request = mapper.readValue(eventData, EventRequest.class);
+
+        String imageUrl = null;
+        if (image != null && !image.isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" +
+                    image.getOriginalFilename().replaceAll("\\s+", "_");
+            Path uploadPath = Paths.get("uploads/events");
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Files.write(uploadPath.resolve(fileName), image.getBytes());
+            imageUrl = "/uploads/events/" + fileName;
+        }
+
+        request.setImageUrl(imageUrl);
         return eventService.createEvent(request, authentication.getName());
     }
 
-
-    // ORGANIZER (own event)
+    // ORGANIZER ONLY
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
     public Event updateEvent(
@@ -55,22 +79,20 @@ public class EventController {
         return ResponseEntity.ok("Event deleted");
     }
 
-    // Add these two methods to your existing EventController:
-
-    // ✅ PUBLIC — approved events only
+    // PUBLIC — approved events only
     @GetMapping("/approved")
     public List<Event> getApprovedEvents() {
         return eventService.getApprovedEvents();
     }
 
-    // ✅ ORGANIZER — my events
+    // ORGANIZER — my events
     @GetMapping("/my")
     @PreAuthorize("hasAuthority('ROLE_ORGANIZER')")
     public List<Event> getMyEvents(Authentication authentication) {
         return eventService.getMyEvents(authentication.getName());
     }
 
-    // ✅ GET SINGLE EVENT BY ID (approved only — used on EventDetails page)
+    // GET SINGLE EVENT BY ID (approved only)
     @GetMapping("/{id}")
     public Event getEventById(@PathVariable Long id) {
         return eventService.getEventById(id);
