@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -18,7 +19,6 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    // ✅ CREATE BOOKING
     @PostMapping
     public Booking bookEvent(
             @RequestBody BookingRequest request,
@@ -27,9 +27,22 @@ public class BookingController {
         return bookingService.createBooking(request, authentication.getName());
     }
 
-    // ✅ NEW — GET MY BOOKINGS
     @GetMapping("/my")
     public List<Booking> getMyBookings(Authentication authentication) {
         return bookingService.getMyBookings(authentication.getName());
+    }
+
+    // ✅ NEW — CANCEL BOOKING
+    @PostMapping("/{id}/cancel")
+    public Booking cancelBooking(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body,
+            Authentication authentication
+    ) {
+        return bookingService.cancelBooking(
+                id,
+                body.get("reason"),
+                authentication.getName()
+        );
     }
 }
