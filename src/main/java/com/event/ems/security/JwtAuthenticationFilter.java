@@ -23,13 +23,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
-    // 🔥 THIS IS THE KEY
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
-        return path.startsWith("/api/auth/");
-    }
+        String path = request.getRequestURI();
 
+        return path.startsWith("/api/auth/")
+                || path.startsWith("/uploads/");
+    }
 
     @Override
     protected void doFilterInternal(
@@ -37,6 +37,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // 🔥 HARD BYPASS (FORCE SKIP)
+        if (path.contains("/uploads/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         String authHeader = request.getHeader("Authorization");
 
